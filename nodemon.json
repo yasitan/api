@@ -1,0 +1,18 @@
+{
+  "watch": [
+    "src",
+    "index.ts",
+    "tsconfig.json",
+    ".env"
+  ],
+  "ext": "ts",
+  "ignore": [
+    "src/**/*.spec.ts"
+  ],
+  "exec": "node -r ts-node/register -r tsconfig-paths/register --inspect=0.0.0.0:9229 index.ts",
+  "env": {
+    "TS_NODE_FILES": true,
+    "NODE_DEBUG": 9229,
+    "NODE_ENV": "development"
+  }
+}
