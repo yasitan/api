@@ -3,6 +3,7 @@ import appRouter from './src/routes';
 import dotenv from 'dotenv';
 import { connect } from 'mongoose';
 import { getEnv } from './src/helpers/system';
+import logger from './src/helpers/logger';
 
 dotenv.config();
 
@@ -11,7 +12,7 @@ const port = process.env.PORT || 3000;
 
 // connect mongodb
 connect(getEnv('APP_MONGODB_URI')).catch(err => {
-  console.log('🛑 DBG::Mongodb Can not connect to DB', err.message);
+  logger.info('🛑 DBG::Mongodb Can not connect to DB', err.message);
   process.exit(1);
 });
 
@@ -22,5 +23,5 @@ app.get('/ver', (req: Request, res: Response) => {
 app.use('/', appRouter)
 
 app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  logger.info(`✅ [server]: Server is running at http://localhost:${port}`);
 });
