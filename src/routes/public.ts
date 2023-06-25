@@ -4,6 +4,6 @@ import { helloWorld } from '../middlewares/public'
 const router = Router();
 
 
-router.use('/hello-world', helloWorld);
+router.get('/hello-world', helloWorld);
 
 export default router;
