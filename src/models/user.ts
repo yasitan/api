@@ -1,6 +1,6 @@
-export default interface Sample {
+export default interface User {
   _id: string;
-  name: string;
+  email: string;
   createdAt: number;
   updatedAt: number;
 }

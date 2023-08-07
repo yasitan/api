@@ -2,19 +2,32 @@ import express, { Express, NextFunction, Request, Response } from 'express';
 import appRouter from './src/routes';
 import dotenv from 'dotenv';
 import { connect } from 'mongoose';
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
 import { getEnv } from './src/helpers/system';
 import logger from './src/helpers/logger';
+import LocalUserModel from './src/db/local-user';
+
 
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
+
 // connect mongodb
 connect(getEnv('APP_MONGODB_URI')).catch(err => {
   logger.info('🛑 DBG::Mongodb Can not connect to DB', err.message);
   process.exit(1);
 });
+
+// Configure passport-local to use local user model for authentication
+passport.use(new LocalStrategy({ session: false, usernameField: 'email' }, LocalUserModel.authenticate()));
+
+passport.serializeUser(LocalUserModel.serializeUser() as any);
+passport.deserializeUser(LocalUserModel.deserializeUser());
+
+
 
 app.use(express.json());
 

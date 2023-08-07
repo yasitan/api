@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { helloWorld } from '../middlewares/public'
+import { getVersion } from '../middlewares/public'
 
 const router = Router();
 
 
-router.get('/hello-world', helloWorld);
+router.get('/ver', getVersion);
 
 export default router;
