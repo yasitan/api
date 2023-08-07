@@ -9,7 +9,7 @@ import passport from 'passport';
 import User from '../models/user';
 import AppError from '../helpers/error';
 
-const getUserTokenPayload = (user: User) => pick(user, ['_id', 'email']);
+const getUserTokenPayload = (user: User) => ({ user: pick(user, ['_id', 'email']) });
 
 export const register = (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
