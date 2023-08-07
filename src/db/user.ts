@@ -3,9 +3,10 @@ import { getCollectionName } from './utils/collection';
 import { ID_DEFINITION, TIMESTAMPS } from './utils/schema';
 import User from '../models/user';
 
-const SampleSchema = new Schema<User>({
+const UserSchema = new Schema<User>({
   _id: ID_DEFINITION,
-  email: String,
+  email: { type: String, index: true },
+
   createdAt: Number,
   updatedAt: Number
 }, {
@@ -13,7 +14,7 @@ const SampleSchema = new Schema<User>({
   ...TIMESTAMPS
 });
 
-const collection =  model<User>(getCollectionName('User'), SampleSchema);
+const collection =  model<User>(getCollectionName('User'), UserSchema);
 
 export const getUser = (condition: Partial<Record<keyof User, unknown>>) => collection.findOne(condition).lean();
 
