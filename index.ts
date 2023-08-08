@@ -1,4 +1,5 @@
 import express, { Express, NextFunction, Request, Response } from 'express';
+import cors from 'cors';
 import appRouter from './src/routes';
 import dotenv from 'dotenv';
 import { connect } from 'mongoose';
@@ -8,12 +9,10 @@ import { getEnv } from './src/helpers/system';
 import logger from './src/helpers/logger';
 import LocalUserModel from './src/db/local-user';
 
-
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
-
 
 // connect mongodb
 connect(getEnv('APP_MONGODB_URI')).catch(err => {
@@ -27,8 +26,7 @@ passport.use(new LocalStrategy({ session: false, usernameField: 'email' }, Local
 passport.serializeUser(LocalUserModel.serializeUser() as any);
 passport.deserializeUser(LocalUserModel.deserializeUser());
 
-
-
+app.use(cors());
 app.use(express.json());
 
 app.get('/ver', (req: Request, res: Response) => {
