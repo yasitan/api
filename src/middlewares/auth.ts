@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import LocalUserModel from '../db/local-user';
 import LocalUser from '../models/local-user';
 import { createUser, getUser } from '../db/user';
-import { signJwt } from '../helpers/jwt';
+import { signToken, verifyToken } from '../helpers/jwt';
 import { attachResponseData } from './utils/response';
 import { pick } from 'lodash';
 import passport from 'passport';
@@ -20,7 +20,7 @@ export const register = (req: Request, res: Response, next: NextFunction) => {
     }
 
     const user = await createUser({ email: account.email })
-    attachResponseData(res, { token: signJwt({ id: user._id, payload: getUserTokenPayload(user) })});
+    attachResponseData(res, { token: signToken({ id: user._id, payload: getUserTokenPayload(user) })});
     next();
   })
 }
@@ -36,6 +36,26 @@ export const signIn = (req: Request, res: Response, next: NextFunction) =>
     }
 
     const user = await getUser({ email: localUser.email });
-    attachResponseData(res, { token: signJwt({ id: user!._id, payload: getUserTokenPayload(user!) })});
+    attachResponseData(res, { token: signToken({ id: user!._id, payload: getUserTokenPayload(user!) })});
     next();
   })(req, res, next);
+
+export const verify = async (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  try {
+    if (!authHeader) {
+      throw AppError.unauthorized('Missing token');
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      throw AppError.unauthorized('Missing token.');
+    }
+
+    await verifyToken(token);
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
