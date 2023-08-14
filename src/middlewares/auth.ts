@@ -52,7 +52,12 @@ export const verify = async (req: Request, res: Response, next: NextFunction) =>
       throw AppError.unauthorized('Missing token.');
     }
 
-    await verifyToken(token);
+    const user = await verifyToken(token);
+    if (!user) {
+      throw AppError.unauthorized('Invalid token.');
+    }
+
+    req.user = user as Request['user'];
 
     next();
   } catch (error) {

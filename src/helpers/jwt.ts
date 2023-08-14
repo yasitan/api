@@ -1,5 +1,6 @@
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 import { getEnv } from './system';
+import User from '../models/user';
 
 interface JwtSigningData {
   id: string;
@@ -15,10 +16,10 @@ export const signToken = (userData: JwtSigningData) =>
 
 
 export const verifyToken = (token: string) => new Promise((resolve, reject) => {
-  jwt.verify(token, getEnv('JWT_SECRET'), (err) => {
+  jwt.verify(token, getEnv('JWT_SECRET'), (err, payload) => {
     if (err) {
       return reject(err);
     }
-    resolve(undefined);
+    resolve((payload as JwtPayload).user as User);
   });
 });
