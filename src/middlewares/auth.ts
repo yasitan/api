@@ -14,21 +14,21 @@ const getUserTokenPayload = (user: User) => ({ user: pick(user, ['_id', 'email']
 export const register = (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
 
-  LocalUserModel.register(new LocalUserModel({ email }), password, async (err: any, account: LocalUser) => {
+  LocalUserModel.register(new LocalUserModel({ email }), password, async (err: unknown, account: LocalUser) => {
     if (err) {
       return next(err);
     }
 
-    const user = await createUser({ email: account.email })
+    const user = await createUser({ email: account.email });
     attachResponseData(res, { token: signToken({ id: user._id, payload: getUserTokenPayload(user) })});
     next();
-  })
-}
+  });
+};
 
 export const signIn = (req: Request, res: Response, next: NextFunction) =>
-  passport.authenticate('local', async (err: any, localUser: LocalUser) => {
+  passport.authenticate('local', async (err: unknown, localUser: LocalUser) => {
     if (err) {
-      return next(err)
+      return next(err);
     }
 
     if (!localUser) {

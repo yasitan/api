@@ -1,4 +1,4 @@
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { getEnv } from './system';
 import User from '../models/user';
 

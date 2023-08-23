@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getVersion } from '../middlewares/public'
+import { getVersion } from '../middlewares/public';
 
 const router = Router();
 
