@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
-import { attachResponseData } from './utils/response';
+import { attachResponseData, getSocket } from './utils/response';
 import { getUserId } from './utils/request';
 import * as Conversation from '../db/conversation';
 import * as Message from '../db/message';
 import AppError from '../helpers/error';
 import uuid from '../helpers/uuid';
 import { chat as askGpt } from '../integrations/openai';
+import { sendMessage } from '../integrations/socket';
 
 export const createConversation = async (req: Request, res: Response, next: NextFunction) => {
   // Default value, we will update it base on the first message from this conversation later
@@ -48,11 +49,12 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
   const message = await Message.createMessage({ ownerId: getUserId(req), content, convoId: id });
 
   askGpt(
-    `You are ChatGPT, your new AI assistant. Your user is seeking assistance and support. Provide helpful responses based on the following conversation:`,
+    // eslint-disable-next-line max-len
+    'You are ChatGPT, your new AI assistant. Your user is seeking assistance and support. Provide helpful responses based on the following conversation:',
     [message]
   ).then(async text => {
-    const message = await Message.createMessage({ content: text, convoId: id });
-
+    const botMessage = await Message.createMessage({ content: text, convoId: id });
+    sendMessage(getSocket(res), getUserId(req), botMessage);
     // TODO: message - will be sent message back to client also
   });
 

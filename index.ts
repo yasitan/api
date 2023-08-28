@@ -8,12 +8,23 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import { getEnv } from './src/helpers/system';
 import logger from './src/helpers/logger';
 import LocalUserModel from './src/db/local-user';
+import socket from './src/integrations/socket';
+import { attachSocket } from './src/middlewares/utils/response';
+import { createServer } from 'http';
 
 dotenv.config();
 
 const app: Express = express();
+const server = createServer(app);
 const DEFAULT_PORT = 3000;
 const port = process.env.PORT || DEFAULT_PORT;
+
+// integrate socket
+const io = socket(server);
+app.use((_: Request, res: Response, next: NextFunction) => {
+  attachSocket(res, io);
+  next();
+});
 
 // connect mongodb
 connect(getEnv('APP_MONGODB_URI')).catch(err => {
@@ -45,7 +56,7 @@ app.use((err: Error & { status?: number }, request: Request, res: Response, next
   next();
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
   logger.info(`✅ [server]: Server is running at http://localhost:${port}`);
 });
 
