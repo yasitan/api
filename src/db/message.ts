@@ -19,8 +19,14 @@ const MessageSchema = new Schema<Message>({
 
 const collection =  model<Message>(getCollectionName('Message'), MessageSchema);
 
-export const getHistoryMessages = (condition: AnyKeys<Message>) =>
-  collection.find(condition).sort({ createdAt: -1 }).lean();
+export const getHistoryMessages = (condition: AnyKeys<Message>, options?: { limit?: number }) => {
+  const messages = collection.find(condition).sort({ createdAt: -1 });
+  if (options?.limit) {
+    messages.limit(options.limit);
+  }
+
+  return messages.lean();
+};
 
 export const createMessage = (message: AnyKeys<Message>) =>
   collection.create(message);
