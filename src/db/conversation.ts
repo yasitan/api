@@ -22,7 +22,7 @@ export const getConversation = (condition: AnyKeys<Conversation>) =>
   collection.findOne(condition).lean();
 
 export const getConversations = (condition: AnyKeys<Conversation>) =>
-  collection.find(condition).lean();
+  collection.find(condition).sort({ createdAt: -1 }).lean();
 
 export const createConversation = (user: AnyKeys<Conversation>) =>
   collection.create(user);
