@@ -8,6 +8,7 @@ const MessageSchema = new Schema<Message>({
   ownerId: String,
   convoId: { type: String, index: true, required: true },
   content: String,
+  metadata: Object,
 
   createdAt: { type: Number, index: -1 },
   updatedAt: Number

@@ -40,24 +40,26 @@ export const getConvoMessages = async (req: Request, res: Response, next: NextFu
 
 export const chat = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
-  const { content } = req.body;
-  const conversation = await Conversation.getConversation({ _id: id, userId: getUserId(req) });
+  const { message } = req.body;
+  const userId = getUserId(req);
+  const conversation = await Conversation.getConversation({ _id: id, userId });
   if (!conversation) {
     return next(AppError.notFound('Conversation is not found'));
   }
 
-  const message = await Message.createMessage({ ownerId: getUserId(req), content, convoId: id });
+  const createdMessage = await Message.createMessage({ ...message, ownerId: getUserId(req), convoId: id });
+  sendMessage(getSocket(res), userId, createdMessage);
 
   askGpt(
     // eslint-disable-next-line max-len
     'You are ChatGPT, your new AI assistant. Your user is seeking assistance and support. Provide helpful responses based on the following conversation:',
-    [message]
+    [createdMessage]
   ).then(async text => {
     const botMessage = await Message.createMessage({ content: text, convoId: id });
-    sendMessage(getSocket(res), getUserId(req), botMessage);
-    // TODO: message - will be sent message back to client also
+
+    sendMessage(getSocket(res), userId, botMessage);
   });
 
-  attachResponseData(res, { message });
+  attachResponseData(res, { message: createdMessage });
   next();
 };
