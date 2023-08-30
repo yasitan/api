@@ -6,7 +6,7 @@ import * as MessageCollection from '../db/message';
 import AppError from '../helpers/error';
 import uuid from '../helpers/uuid';
 import { chat as askGpt } from '../integrations/openai';
-import { sendMessage } from '../integrations/socket';
+import { sendConversation, sendMessage } from '../integrations/socket';
 import Message from '../models/message';
 
 const generateBotMessage = async (message: Message) => {
@@ -28,6 +28,8 @@ export const createConversation = async (req: Request, res: Response, next: Next
   const title = `Convo #${uuid().slice(0, CODE_LENGTH)}`;
 
   const conversation = await Conversation.createConversation({ title, userId: getUserId(req) });
+
+  sendConversation(getSocket(res), conversation);
 
   attachResponseData(res, { conversation });
   next();

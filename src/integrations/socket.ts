@@ -2,6 +2,7 @@ import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
 import Message from '../models/message';
 import { verifyToken } from '../helpers/jwt';
+import Conversation from '../models/conversation';
 
 const exportEvents = (io: Server) => {
   io.on('connection', (socket) => {
@@ -34,4 +35,8 @@ export default (server: HttpServer) => {
 
 export const sendMessage = (io: Server, userId: string, message: Message) => {
   io.to(userId).emit('new_message', { message });
+};
+
+export const sendConversation = (io: Server, conversation: Conversation) => {
+  io.to(conversation.userId).emit('new_conversation', { conversation });
 };
